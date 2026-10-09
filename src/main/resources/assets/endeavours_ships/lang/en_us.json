@@ -1,0 +1,17 @@
+{
+  "block.endeavours_ships.ship_helm": "Ship Helm",
+  "container.endeavours_ships.ship_cargo": "Ship Cargo",
+  "entity.endeavours_ships.ship": "Ship",
+  "message.endeavours_ships.assembled": "Ship assembled with %s blocks",
+  "message.endeavours_ships.assembly_failed": "The ship could not be assembled",
+  "message.endeavours_ships.disassembled": "Ship disassembled",
+  "message.endeavours_ships.disassembly_obstructed": "There is not enough room to disassemble here",
+  "message.endeavours_ships.grounded": "The hull is connected to solid ground",
+  "message.endeavours_ships.not_enough_water": "At least a quarter of the hull must touch water",
+  "message.endeavours_ships.one_helm_required": "A ship must contain exactly one helm",
+  "message.endeavours_ships.stop_before_disassembly": "Stop the ship before disassembling it",
+  "message.endeavours_ships.too_few_blocks": "The vessel is too small to assemble",
+  "message.endeavours_ships.too_large": "The vessel exceeds the configured dimensions",
+  "message.endeavours_ships.too_many_blocks": "The vessel exceeds the configured block limit",
+  "message.endeavours_ships.too_much_cargo": "The vessel contains more than 54 occupied storage slots"
+}

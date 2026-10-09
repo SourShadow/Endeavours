@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "endeavours_ships:ship_helm",
+    "#minecraft:planks",
+    "#minecraft:logs",
+    "#minecraft:wooden_stairs",
+    "#minecraft:wooden_slabs",
+    "#minecraft:wooden_fences",
+    "#minecraft:wooden_trapdoors",
+    "#minecraft:wool",
+    "#minecraft:banners",
+    "minecraft:chest",
+    "minecraft:trapped_chest",
+    "minecraft:barrel",
+    "minecraft:ladder"
+  ]
+}
