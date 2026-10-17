@@ -1,7 +1,11 @@
-name: Package Locator Friends for NeoForge 26.1.2.109
+name: Build Locator Friends
 on:
   push:
     branches: [build/locator-friends-26-1-2]
+    paths:
+      - 'locator-friends/src/**'
+      - 'locator-friends/build.gradle'
+      - 'locator-friends/gradle.properties'
 permissions:
   contents: write
 jobs:
@@ -9,42 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Repackage compiled 26.1.2 JAR for NeoForge 26.1.2.109
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          from zipfile import ZipFile
-          original=Path('locator-friends/dist/Endeavours-Locator-Friends-26.1.2.jar')
-          output=Path('locator-friends/dist/Endeavours-Locator-Friends-NeoForge-26.1.2.109.jar')
-          assert original.exists(), 'Previously compiled working Minecraft 26.1.2 JAR is missing'
-          found=False
-          with ZipFile(original) as source, ZipFile(output,'w') as dst:
-              for entry in source.infolist():
-                  contents=source.read(entry.filename)
-                  if entry.filename=='META-INF/neoforge.mods.toml':
-                      found=True
-                      text=contents.decode('utf-8')
-                      assert 'versionRange="[26.1.2.116,)"' in text, 'Unexpected original required version'
-                      text=text.replace('versionRange="[26.1.2.116,)"','versionRange="[26.1.2.109,)"')
-                      text=text.replace('version="0.1.0"','version="0.1.1"')
-                      contents=text.encode('utf-8')
-                  dst.writestr(entry,contents)
-          assert found, 'Mod metadata absent'
-          with ZipFile(output) as jar:
-              info=jar.read('META-INF/neoforge.mods.toml').decode()
-              assert 'versionRange="[26.1.2.109,)"' in info
-              assert 'LocatorBarMixin.class' in '\n'.join(jar.namelist())
-          print('Validated NeoForge minimum 26.1.2.109:',output,output.stat().st_size,'bytes')
-          PY
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build .109-compatible Locator Friends against Minecraft 26.1.2
+        run: ./gradlew -p locator-friends build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
           name: Endeavours-Locator-Friends-NeoForge-26.1.2.109
-          path: locator-friends/dist/Endeavours-Locator-Friends-NeoForge-26.1.2.109.jar
+          path: locator-friends/build/libs/endeavours_locator-0.1.1.jar
           if-no-files-found: error
-      - name: Commit compatibility JAR to isolated branch
+      - name: Publish compiled JAR to isolated branch
         run: |
+          mkdir -p locator-friends/dist
+          cp locator-friends/build/libs/endeavours_locator-0.1.1.jar locator-friends/dist/Endeavours-Locator-Friends-NeoForge-26.1.2.109.jar
           git config user.name "Endeavours build bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add locator-friends/dist/Endeavours-Locator-Friends-NeoForge-26.1.2.109.jar
-          git commit -m "Add verified packaged Locator Friends JAR for NeoForge 26.1.2.109"
+          git commit -m "Update compiled Locator Friends 26.1.2.109-compatible JAR"
           git push origin HEAD:build/locator-friends-26-1-2
