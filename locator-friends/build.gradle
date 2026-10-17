@@ -6,7 +6,10 @@ version = '0.1.1'
 group = 'dev.endeavours.locator'
 base { archivesName = 'endeavours_locator' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-dependencies { implementation 'net.neoforged:neoforge:26.1.2.109' }
+// Compile against a valid NeoForge 26.1.2 development distribution.
+// This mod only calls stable client APIs from Minecraft 26.1.2 and the NeoForge client event API.
+// Runtime minimum version is 26.1.2.109 in neoforge.mods.toml.
+dependencies { implementation 'net.neoforged:neoforge:26.1.2.116' }
 runs {
  configureEach {
   workingDirectory project.layout.projectDirectory.dir('run').dir(name)
