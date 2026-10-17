@@ -14,19 +14,19 @@ jobs:
           distribution: temurin
           java-version: '25'
       - uses: gradle/actions/setup-gradle@v4
-      - name: Compile NeoForge 26.1.2
-        run: ./gradlew -p locator-friends build --stacktrace
+      - name: Compile against NeoForge 26.1.2.109
+        run: ./gradlew -p locator-friends clean build --stacktrace
       - uses: actions/upload-artifact@v4
         with:
-          name: Endeavours-Locator-Friends-26.1.2-JAR
-          path: locator-friends/build/libs/*.jar
+          name: Endeavours-Locator-Friends-NeoForge-26.1.2.109
+          path: locator-friends/build/libs/endeavours_locator-0.1.1.jar
           if-no-files-found: error
-      - name: Commit compiled JAR to build branch
+      - name: Commit NeoForge 109 JAR to isolated branch
         run: |
           mkdir -p locator-friends/dist
-          cp locator-friends/build/libs/endeavours_locator-0.1.0.jar locator-friends/dist/Endeavours-Locator-Friends-26.1.2.jar
+          cp locator-friends/build/libs/endeavours_locator-0.1.1.jar locator-friends/dist/Endeavours-Locator-Friends-NeoForge-26.1.2.109.jar
           git config user.name "Endeavours build bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add locator-friends/dist/Endeavours-Locator-Friends-26.1.2.jar
-          git commit -m "Add compiled Locator Friends 26.1.2 JAR"
+          git add locator-friends/dist/Endeavours-Locator-Friends-NeoForge-26.1.2.109.jar
+          git commit -m "Build Locator Friends for NeoForge 26.1.2.109"
           git push origin HEAD:build/locator-friends-26-1-2

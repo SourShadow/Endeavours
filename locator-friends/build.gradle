@@ -2,11 +2,11 @@ plugins {
  id 'java-library'
  id 'net.neoforged.gradle.userdev' version '7.1.39'
 }
-version = '0.1.0'
+version = '0.1.1'
 group = 'dev.endeavours.locator'
 base { archivesName = 'endeavours_locator' }
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
-dependencies { implementation 'net.neoforged:neoforge:26.1.2.116' }
+dependencies { implementation 'net.neoforged:neoforge:26.1.2.109' }
 runs {
  configureEach {
   workingDirectory project.layout.projectDirectory.dir('run').dir(name)

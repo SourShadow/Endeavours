@@ -3,7 +3,7 @@ loaderVersion="[1,)"
 license="MIT"
 [[mods]]
 modId="endeavours_locator"
-version="0.1.0"
+version="0.1.1"
 displayName="Endeavours Locator Friends"
 authors="Endeavours"
 description='''Client-only friends filter, marker colors and skins for the vanilla Locator Bar.'''
@@ -12,7 +12,7 @@ config="endeavours_locator.mixins.json"
 [[dependencies.endeavours_locator]]
 modId="neoforge"
 type="required"
-versionRange="[26.1.2.116,)"
+versionRange="[26.1.2.109,)"
 ordering="NONE"
 side="CLIENT"
 [[dependencies.endeavours_locator]]
