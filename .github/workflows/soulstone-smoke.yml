@@ -2,7 +2,7 @@ name: Soulstone dedicated server smoke test
 on:
   push:
     branches: [soulstone-26-1-2-build]
-    paths: ['.github/workflows/soulstone-smoke.yml', 'soulstone/v2_patch.py']
+    paths: ['.github/workflows/soulstone-smoke.yml', 'soulstone/v2_patch.py', 'soulstone/glintshader-assets/**']
   workflow_dispatch:
 jobs:
   server:
@@ -27,7 +27,10 @@ jobs:
           t.extractall('soulstone/project',filter='data')
           PY
       - name: Apply v0.2 changes
-        run: python3 soulstone/v2_patch.py soulstone/project
+        run: |
+          python3 soulstone/v2_patch.py soulstone/project
+          mkdir -p soulstone/project/src/main/resources/assets/customglint/shaders
+          cp -R soulstone/glintshader-assets/assets/customglint/shaders/. soulstone/project/src/main/resources/assets/customglint/shaders/
       - name: Start dedicated server, check mod load and world data
         working-directory: soulstone/project
         shell: bash

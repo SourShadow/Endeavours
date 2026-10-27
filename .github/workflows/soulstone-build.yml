@@ -5,6 +5,7 @@ on:
     paths:
       - 'soulstone/source.tar.br'
       - 'soulstone/v2_patch.py'
+      - 'soulstone/glintshader-assets/**'
       - '.github/workflows/soulstone-build.yml'
   workflow_dispatch:
 permissions:
@@ -34,6 +35,8 @@ jobs:
       - name: Compile NeoForge mod
         run: |
           python3 soulstone/v2_patch.py soulstone/project
+          mkdir -p soulstone/project/src/main/resources/assets/customglint/shaders
+          cp -R soulstone/glintshader-assets/assets/customglint/shaders/. soulstone/project/src/main/resources/assets/customglint/shaders/
           gradle -p soulstone/project build --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         if: success()

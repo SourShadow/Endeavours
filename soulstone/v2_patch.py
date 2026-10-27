@@ -13,12 +13,12 @@ repositories {
 }
 dependencies {
     jarJar(implementation('net.tunamods.customglint:glint-and-glamour-api')) {
-        version { strictly '[1.7.0,2.0)'; prefer '1.7.0' }
+        version { strictly '[1.8.0,2.0)'; prefer '1.8.0' }
     }
 }
 """)
-update('gradle.properties', 'mod_version=0.1.0-dev', 'mod_version=0.2.1-dev')
-update('src/main/resources/META-INF/neoforge.mods.toml','version="0.1.0-dev"', 'version="0.2.1-dev"')
+update('gradle.properties', 'mod_version=0.1.0-dev', 'mod_version=0.2.2-dev')
+update('src/main/resources/META-INF/neoforge.mods.toml','version="0.1.0-dev"', 'version="0.2.2-dev"')
 p='src/main/java/cz/endeavours/soulstone/Soulstone.java'
 update(p, 'import net.minecraft.core.registries.Registries;', 'import net.minecraft.core.registries.Registries;\nimport net.minecraft.world.item.CreativeModeTabs;\nimport net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;')
 update(p, '        RECIPES.register(modBus);\n        NeoForge.EVENT_BUS.register(SoulstoneDeathEvents.class);', """        RECIPES.register(modBus);
@@ -96,4 +96,4 @@ for locale in ('en_us','cs_cz'):
     j=json.loads(p.read_text()); j['endeavours_soulstone.soul_sealed']=' (Soul Sealed)'
     p.write_text(json.dumps(j,ensure_ascii=False,indent=2)+'\n')
 (root/'THIRD_PARTY_NOTICES.md').write_text('Glint & Glamour API (TunaMods and contributors) used under the MIT license. Source: https://github.com/TunaMods/Glint-and-Glamour\n')
-print('Soulstone v0.2.0 patch applied')
+print('Soulstone v0.2.2 patch applied')
