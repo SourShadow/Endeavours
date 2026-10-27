@@ -1,0 +1,54 @@
+name: Soulstone dedicated server smoke test
+on:
+  push:
+    branches: [soulstone-26-1-2-build]
+    paths: ['.github/workflows/soulstone-smoke.yml']
+  workflow_dispatch:
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.1'
+      - name: Extract mod sources
+        run: |
+          python3 -m pip install --quiet brotli
+          mkdir -p soulstone/project
+          python3 - <<'PY'
+          import brotli,tarfile,io
+          t=tarfile.open(fileobj=io.BytesIO(brotli.decompress(open('soulstone/source.tar.br','rb').read())),mode='r:')
+          t.extractall('soulstone/project',filter='data')
+          PY
+      - name: Start dedicated server, check mod load and world data
+        working-directory: soulstone/project
+        shell: bash
+        run: |
+          mkdir -p run run-server
+          printf 'eula=true\n' > eula.txt
+          cp eula.txt run/eula.txt
+          cp eula.txt run-server/eula.txt
+          gradle runServer --no-daemon --console=plain > smoke.log 2>&1 &
+          pid=$!
+          okay=0
+          for i in $(seq 1 210); do
+            if grep -Eiq '(^|[^a-z])Done \([0-9.,]+s\)|For help, type' smoke.log; then okay=1; break; fi
+            if ! kill -0 "$pid" 2>/dev/null; then break; fi
+            sleep 1
+          done
+          cat smoke.log | tail -n 260
+          kill "$pid" 2>/dev/null || true
+          if grep -Eiq 'Failed to load datapacks|Failed to parse|Error loading|Exception in server tick|Mod loading has failed' smoke.log; then echo 'FAIL: data/mod loading'; exit 1; fi
+          if [ "$okay" != 1 ]; then echo 'FAIL: server did not reach Ready state'; exit 1; fi
+          echo 'PASS: dedicated server startup and data registration'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: soulstone-startup-log
+          path: soulstone/project/smoke.log
