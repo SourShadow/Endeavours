@@ -17,14 +17,15 @@ dependencies {
     }
 }
 """)
-update('gradle.properties', 'mod_version=0.1.0-dev', 'mod_version=0.2.0-dev')
-update('src/main/resources/META-INF/neoforge.mods.toml','version="0.1.0-dev"', 'version="0.2.0-dev"')
+update('gradle.properties', 'mod_version=0.1.0-dev', 'mod_version=0.2.1-dev')
+update('src/main/resources/META-INF/neoforge.mods.toml','version="0.1.0-dev"', 'version="0.2.1-dev"')
 p='src/main/java/cz/endeavours/soulstone/Soulstone.java'
 update(p, 'import net.minecraft.core.registries.Registries;', 'import net.minecraft.core.registries.Registries;\nimport net.minecraft.world.item.CreativeModeTabs;\nimport net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;')
 update(p, '        RECIPES.register(modBus);\n        NeoForge.EVENT_BUS.register(SoulstoneDeathEvents.class);', """        RECIPES.register(modBus);
         modBus.addListener(this::creativeTabs);
         NeoForge.EVENT_BUS.register(SoulstoneDeathEvents.class);
-        NeoForge.EVENT_BUS.register(SoulstoneTooltip.class);""")
+        NeoForge.EVENT_BUS.register(SoulstoneTooltip.class);
+        NeoForge.EVENT_BUS.register(SoulstoneMigration.class);""")
 update(p, '    public Soulstone(IEventBus modBus) {', """    private void creativeTabs(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) event.accept(ORE_ITEM.get());
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
@@ -57,6 +58,36 @@ public final class SoulstoneTooltip {
         Component original = event.getToolTip().getFirst();
         event.getToolTip().set(0, original.copy().append(
                 Component.translatable("endeavours_soulstone.soul_sealed").withStyle(ChatFormatting.GOLD)));
+    }
+}
+""")
+(java/'SoulstoneMigration.java').write_text("""package cz.endeavours.soulstone;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.tunamods.customglint.common.CustomGlint;
+
+/** Give active seals made with v0.1 the same glint as newly made ones. */
+public final class SoulstoneMigration {
+    private SoulstoneMigration() {}
+    @SubscribeEvent
+    public static void onTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if ((player.tickCount % 40) != 0) return;
+        boolean changed = false;
+        for (int i = 0; i < player.getInventory().getContainerSize(); ++i)
+            changed |= stamp(player.getInventory().getItem(i));
+        for (int i = 0; i < player.getEnderChestInventory().getContainerSize(); ++i)
+            changed |= stamp(player.getEnderChestInventory().getItem(i));
+        if (changed) player.inventoryMenu.broadcastChanges();
+    }
+    private static boolean stamp(ItemStack item) {
+        if (item.isEmpty() || item.getOrDefault(Soulstone.SOUL_STATE.get(), 0) != 1
+                || CustomGlint.has(item)) return false;
+        CustomGlint.write(item, CustomGlint.VANILLA,
+                new int[]{0xB3FFD65A, 0xC8FFBB38}, 0.75F, true, 1.0F, true);
+        return true;
     }
 }
 """)
