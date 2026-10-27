@@ -1,0 +1,50 @@
+name: Compile Soulstone for NeoForge 26.1.2
+on:
+  push:
+    branches: [soulstone-26-1-2-build]
+    paths:
+      - 'soulstone/source.tar.br'
+      - '.github/workflows/soulstone-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.2.1'
+      - name: Unpack dedicated Soulstone source
+        run: |
+          python3 -m pip install --quiet brotli
+          mkdir -p soulstone/project
+          python3 - <<'PY'
+          import brotli,tarfile,io
+          b=brotli.decompress(open('soulstone/source.tar.br','rb').read())
+          with tarfile.open(fileobj=io.BytesIO(b),mode='r:') as t:
+              t.extractall('soulstone/project',filter='data')
+          PY
+      - name: Compile NeoForge mod
+        run: gradle -p soulstone/project build --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: Endeavours-Soulstone-26.1.2
+          path: soulstone/project/build/libs/*.jar
+          if-no-files-found: error
+      - name: Publish jar on isolated build branch
+        if: success()
+        run: |
+          mkdir -p soulstone/releases
+          cp soulstone/project/build/libs/*.jar soulstone/releases/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add soulstone/releases/
+          git diff --cached --quiet || git commit -m 'Publish Soulstone dev build'
+          git push origin HEAD:soulstone-26-1-2-build
