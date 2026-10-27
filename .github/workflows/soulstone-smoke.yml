@@ -26,6 +26,8 @@ jobs:
           t=tarfile.open(fileobj=io.BytesIO(brotli.decompress(open('soulstone/source.tar.br','rb').read())),mode='r:')
           t.extractall('soulstone/project',filter='data')
           PY
+      - name: Apply v0.2 changes
+        run: python3 soulstone/v2_patch.py soulstone/project
       - name: Start dedicated server, check mod load and world data
         working-directory: soulstone/project
         shell: bash

@@ -31,7 +31,8 @@ jobs:
               t.extractall('soulstone/project',filter='data')
           PY
       - name: Compile NeoForge mod
-        run: gradle -p soulstone/project build --no-daemon --stacktrace
+        run: python3 soulstone/v2_patch.py soulstone/project
+          gradle -p soulstone/project build --no-daemon --stacktrace
       - uses: actions/upload-artifact@v4
         if: success()
         with:
