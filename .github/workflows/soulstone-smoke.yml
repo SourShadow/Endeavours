@@ -2,7 +2,7 @@ name: Soulstone dedicated server smoke test
 on:
   push:
     branches: [soulstone-26-1-2-build]
-    paths: ['.github/workflows/soulstone-smoke.yml']
+    paths: ['.github/workflows/soulstone-smoke.yml', 'soulstone/v2_patch.py']
   workflow_dispatch:
 jobs:
   server:

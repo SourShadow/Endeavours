@@ -4,6 +4,7 @@ on:
     branches: [soulstone-26-1-2-build]
     paths:
       - 'soulstone/source.tar.br'
+      - 'soulstone/v2_patch.py'
       - '.github/workflows/soulstone-build.yml'
   workflow_dispatch:
 permissions:
